@@ -6,6 +6,27 @@ import { useEffect, useRef, useState, memo } from "react";
 import { useSTLStore } from "@/store/stlStore"; /* ← CHANGED */
 import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils";
+import styled from "styled-components";
+
+const ModelListContainer = styled.div`
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 10vw;
+  height: 70vh;
+  overflow-y: auto;
+  &::-webkit-scrollbar{
+    display: none;
+  }
+   /* Hide scrollbar for IE, Edge */
+  -ms-overflow-style: none;
+
+  /* Hide scrollbar for Firefox */
+  scrollbar-width: none;
+`;
 
 /* ───────────────────────────────────────────────────────────
    IconMesh – spins a tiny preview
@@ -90,25 +111,26 @@ const ModelIcon = memo(function ModelIcon({ url }) {
    Grid of thumbnails
    ───────────────────────────────────────────────────────── */
 function ModelList({
-  files = ["/models/I.PLY", "/models/demo2.PLY", "/models/Z.PLY"],
+  files = [
+    "/models/I.PLY",
+    "/models/demo2.PLY",
+    "/models/Z.PLY",
+    "/models/500I.PLY",
+    "/models/700I.PLY",
+    "/models/1000I.PLY",
+    "/models/1500I.PLY",
+    "/models/2000I.PLY",
+    "/models/2500I.PLY",
+    "/models/2770I.PLY",
+  ],
 }) {
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 80,
-        left: 20,
-        zIndex: 10,
-        display: "flex",
-        flexWrap: "wrap",
-        maxWidth: 240,
-      }}
-    >
+    <ModelListContainer>
       <h3 style={{ width: "100%", marginBottom: 8 }}>Select a model:</h3>
       {files.map((f) => (
         <ModelIcon key={f} url={f} />
       ))}
-    </div>
+    </ModelListContainer>
   );
 }
 

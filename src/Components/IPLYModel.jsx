@@ -225,6 +225,7 @@ export default function IModel({
           ))}
         </mesh>
       )}
+      <ModelChooser />
     </>
   );
 }

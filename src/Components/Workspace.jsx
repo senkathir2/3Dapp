@@ -273,7 +273,7 @@ export default function Workspace() {
           ))} */}
           {models.map((model, i) => {
             console.log(models)
-            if (model.shape === "I") {
+            if (model.shape.includes("I")) {
               return (
                 <IModel
                   key={i}
@@ -283,7 +283,7 @@ export default function Workspace() {
                   rotation={model.rotation}
                 />
               );
-            } else if (model.shape === "Z") {
+            } else if (model.shape.includes("Z")) {
               return (
                 <STLModel
                   key={i}

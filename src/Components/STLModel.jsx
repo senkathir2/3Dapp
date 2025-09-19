@@ -13,9 +13,9 @@ import IModel from "./IPLYModel";
 export const Models = () => {
   const models = useSTLStore((s) => s.models);
   return models.map(({ pos, geo, shape, rotation }, i) => {
-    if (shape === "I") {
+    if (shape.includes("I")) {
       return <IModel key={i} position={pos} geom={geo} shape={shape} rotation={rotation} />;
-    } else if (shape === "Z") {
+    } else if (shape.includes("Z")) {
       return <STLModel key={i} position={pos} geom={geo} shape={shape} rotation={rotation}/>;
     }
   });

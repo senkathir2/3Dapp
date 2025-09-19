@@ -8,7 +8,18 @@ import { PLYLoader } from "three/examples/jsm/loaders/PLYLoader";
 import * as THREE from "three";
 export default function ModelChooser() {
   /* global store slices */
-  const fileList = ["/models/I.PLY", "/models/demo2.PLY", "/models/Z.PLY"];
+  const fileList = [
+    "/models/I.PLY",
+    "/models/demo2.PLY",
+    "/models/Z.PLY",
+    "/models/500I.PLY",
+    "/models/700I.PLY",
+    "/models/1000I.PLY",
+    "/models/1500I.PLY",
+    "/models/2000I.PLY",
+    "/models/2500I.PLY",
+    "/models/2770I.PLY",
+  ];
   const pendingAttach = useSTLStore((s) => s.pendingAttach);
   const addModel = useSTLStore((s) => s.addModel);
   const clearPending = useSTLStore((s) => s.setPendingAttach);
