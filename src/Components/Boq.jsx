@@ -56,6 +56,7 @@ export default function Boq() {
         fontSize: 14,
         minWidth: 280,
         zIndex: 101,
+        color: "white"
       }}
     >
       <strong>Bill&nbsp;of&nbsp;Quantities</strong>
@@ -70,8 +71,8 @@ export default function Boq() {
           <tr style={{ borderBottom: "1px solid #ccc" }}>
             <th style={{ textAlign: "left" }}>Item</th>
             <th style={{ textAlign: "right" }}>Qty</th>
-            <th style={{ textAlign: "right" }}>Unit ₹</th>
-            <th style={{ textAlign: "right" }}>Total ₹</th>
+            <th style={{ textAlign: "right" }}>Unit ₹</th>
+            <th style={{ textAlign: "right" }}>Total ₹</th>
           </tr>
         </thead>
         <tbody>
@@ -86,7 +87,7 @@ export default function Boq() {
           {rows.length === 0 && (
             <tr>
               <td colSpan={4} style={{ textAlign: "center", padding: 8 }}>
-                — No items placed —
+                —No items placed—
               </td>
             </tr>
           )}
@@ -94,7 +95,7 @@ export default function Boq() {
         <tfoot>
           <tr style={{ borderTop: "1px solid #ccc" }}>
             <td colSpan={3} style={{ textAlign: "right", fontWeight: 600 }}>
-              Sub‑total ₹
+              Sub total ₹
             </td>
             <td style={{ textAlign: "right", fontWeight: 600 }}>
               {grandTotal.toFixed(2)}

@@ -13,6 +13,8 @@ import BOQ from "@/Components/Boq";
 import ClientOnly from "@/Components/ClientOnly";
 import { useSTLStore } from "@/store/stlStore"; // NEW
 import Topbar from "@/Components/TopBar";
+import SaveBeforeExitDialog from "@/Components/SaveBeforeExitDialog";
+import { Toaster } from "react-hot-toast";
 
 /* heavy R3F bundles */
 const Workspace = dynamic(() => import("@/Components/Workspace"), {
@@ -46,6 +48,11 @@ export default function ClientApp({ files }) {
     <div className={styles.page}>
       {/* thumbnail picker (drag OR face-attach) */}
       <Topbar styles={{ width: "100vw" }} />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+      />
+      <SaveBeforeExitDialog />
       <ModelList />
 
       <ClientOnly>

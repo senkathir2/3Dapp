@@ -10,8 +10,6 @@ import styled from "styled-components";
 
 const ModelListContainer = styled.div`
   position: absolute;
-  top: 80px;
-  left: 20px;
   z-index: 10;
   display: flex;
   flex-wrap: wrap;
@@ -74,7 +72,7 @@ const ModelIcon = memo(function ModelIcon({ url }) {
 
     if (pending) {
       /* snap to face */
-      store.addModel(...pending.pos, geometry.geo.clone(), geometry.shape);
+      store.addModel(...pending.pos, geometry.geo.clone(), geometry.shape, [0,0,0]);
       store.setPendingAttach(null);
     } else {
       /* start drag */
@@ -126,7 +124,7 @@ function ModelList({
 }) {
   return (
     <ModelListContainer>
-      <h3 style={{ width: "100%", marginBottom: 8 }}>Select a model:</h3>
+      {/* <h3 style={{ width: "100%", marginBottom: 8, color:'white' }}>Select a model:</h3> */}
       {files.map((f) => (
         <ModelIcon key={f} url={f} />
       ))}

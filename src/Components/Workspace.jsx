@@ -276,7 +276,8 @@ export default function Workspace() {
             if (model.shape.includes("I")) {
               return (
                 <IModel
-                  key={i}
+                  key={model.id}
+                  id={model.id}
                   position={model.position}
                   geom={model.geometry}
                   shape={model.shape}
@@ -286,7 +287,8 @@ export default function Workspace() {
             } else if (model.shape.includes("Z")) {
               return (
                 <STLModel
-                  key={i}
+                  key={model.id}
+                  id={model.id}
                   position={model.position}
                   geom={model.geometry}
                   shape={model.shape}

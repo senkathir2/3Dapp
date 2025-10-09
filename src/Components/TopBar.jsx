@@ -1,38 +1,160 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Table, ChevronDown, LogIn, UserCircle2 } from "lucide-react"; // npm i lucide-react --legacy-peer-deps
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
+import { useSTLStore } from "@/store/stlStore";
 
 export default function Topbar() {
+  const {
+    projectName,
+    setProject,
+    projects,
+    fetchProjects,
+    loadProjectById,
+    unsavedChanges,
+    clearModels,
+    saveAllToBackend,
+  } = useSTLStore();
+  const [selectedProject, setSelectedProject] = useState(0);
+
+  const handleChange = (event) => {
+    loadProjectById(event.target.value);
+    setSelectedProject(event.target.value);
+  };
+
+  const handleSave = async () => {
+    await saveAllToBackend();
+  };
+
+  const handleDiscard = () => {
+    clearModels();
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
   return (
-    <nav className="fixed top-0 left-0 w-full bg-gray-950/80 backdrop-blur-lg shadow-lg z-50">
+    <nav>
       {/* inner wrapper keeps everything aligned and max‑width constrained */}
       <div
-        className="mx-auto w-full h-[12vh] min-h-16 flex flex-row items-center justify-between px-6 lg:px-12 relative"
         style={{
           display: "flex",
-          width: "95vw",
           justifyContent: "space-between",
-          borderRadius: "8px",
-          padding:"4px"
+          alignItems: "center",
+          color: "white",
+          paddingBottom: "1vh",
         }}
       >
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        {/* <Link href="/" className="flex items-center gap-2 shrink-0">
           <span className="text-3xl">🧠</span>
-        </Link>
+        </Link> */}
 
-        <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-semibold tracking-wide pointer-events-none">
-          Neuraxis
-        </h1>
-        {/*  Right: Utility icons  */}
-        <div className="ml-auto flex items-center gap-6" style={{ display: "flex", gap: "1.5rem" }}>
-          {/* BOQ page link */}
-          <Link
-            href="/BOQ"
-            className="hover:text-gray-300 transition-colors"
-            title="Bill of Quantities"
+        <h1>Neuraxis</h1>
+
+        <FormControl
+          sx={{ m: 1, minWidth: 200 }}
+          variant="outlined"
+          size="small"
+        >
+          <InputLabel id="demo-simple-select-label" sx={{ color: "white" }}>
+            Select To Load
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={selectedProject}
+            label="Select To Load"
+            onChange={handleChange}
+            sx={{
+              color: "white", // Text color
+              "& .MuiSvgIcon-root": {
+                color: "white", // Icon color (dropdown arrow)
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white", // Outline border
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white", // Border on hover
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderColor: "white", // Border on focus
+              },
+              "& .MuiSelect-select": {
+                paddingRight: "0px", // less padding
+              },
+            }}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+              },
+            }}
           >
+            {projects.map((project) => (
+              <MenuItem key={project.id} value={project.id}>
+                {project.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          label="Project Name"
+          variant="outlined"
+          size="small"
+          value={projectName}
+          onChange={(e) => setProject(e.target.value)}
+          sx={{
+            "& .MuiInputBase-input": {
+              color: "white", // Text color
+            },
+            "& .MuiInputLabel-root": {
+              color: "white", // Label color
+            },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: "white", // Default border color
+              },
+              "&:hover fieldset": {
+                borderColor: "white", // Hover border
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "white", // Focused border
+              },
+            },
+          }}
+        />
+        {unsavedChanges && (
+          <>
+            <Button variant="outlined" onClick={() => handleSave()}>
+              Save
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => handleDiscard()}
+            >
+              Discard
+            </Button>
+          </>
+        )}
+
+        {/*  Right: Utility icons  */}
+        <div style={{ display: "flex", gap: "1.5rem" }}>
+          {/* BOQ page link */}
+          <Link href="/BOQ" title="Bill of Quantities">
             <Table className="h-6 w-6" />
           </Link>
 

@@ -9,6 +9,7 @@ import { useSTLStore } from "@/store/stlStore";
 import ModelChooser from "./ModelChooser";
 
 export default function IModel({
+  id,
   geom,
   position,
   shape,
@@ -199,6 +200,12 @@ export default function IModel({
     ];
   }, [hover, size, center]);
 
+  const onRightClick = (event) => {
+    event.stopPropagation();
+    //event.preventDefault();
+    useSTLStore.getState().removeModel(id);
+  };
+
   return (
     <>
       <mesh
@@ -219,6 +226,7 @@ export default function IModel({
           onPointerOut={onOut}
           rotation={rotation}
           onClick={onFaceClick}
+          onContextMenu={onRightClick}
         >
           {[...Array(6)].map((_, i) => (
             <meshStandardMaterial key={i} wireframe opacity={1} />

@@ -14,15 +14,37 @@ export const Models = () => {
   const models = useSTLStore((s) => s.models);
   return models.map(({ pos, geo, shape, rotation }, i) => {
     if (shape.includes("I")) {
-      return <IModel key={i} position={pos} geom={geo} shape={shape} rotation={rotation} />;
+      return (
+        <IModel
+          key={i}
+          position={pos}
+          geom={geo}
+          shape={shape}
+          rotation={rotation}
+        />
+      );
     } else if (shape.includes("Z")) {
-      return <STLModel key={i} position={pos} geom={geo} shape={shape} rotation={rotation}/>;
+      return (
+        <STLModel
+          key={i}
+          position={pos}
+          geom={geo}
+          shape={shape}
+          rotation={rotation}
+        />
+      );
     }
   });
 };
 
 /* ------------------- ONE MESH ----------------------- */
-export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
+export default function STLModel({
+  id,
+  geom,
+  position,
+  shape,
+  rotation = [0, 0, 0],
+}) {
   const meshRef = useRef();
   const [size, setSize] = useState(null);
   const [center, setCenter] = useState(null);
@@ -375,9 +397,8 @@ export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
       e.stopPropagation();
       const mesh = meshRef.current;
       if (!mesh) return;
-      
+
       mesh.updateMatrixWorld(true);
-      
 
       const geom = mesh.geometry;
       const pos = geom.attributes.position;
@@ -410,8 +431,6 @@ export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
       const offsetDir =
         dot > 0 ? faceNormal.clone().negate() : faceNormal.clone();
 
-      
-
       //scene.add(new THREE.PlaneHelper(dragPlane, 5, 0xff0000));
 
       // Get u, v tangent vectors
@@ -423,7 +442,7 @@ export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
       const v = new Vector3().crossVectors(faceNormal, u).normalize();
 
       const uLimit = size.length() / 3; // or more precise method
-      const vLimit = size.length() /1000;
+      const vLimit = size.length() / 1000;
 
       // // 1. Face center - red sphere
       // const faceCenterHelper = new THREE.Mesh(
@@ -499,6 +518,12 @@ export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
     ];
   }, [hover, size, center]);
 
+  const onRightClick = (event) => {
+    event.stopPropagation();
+    //event.preventDefault();
+    useSTLStore.getState().removeModel(id);
+  };
+
   return (
     <>
       <mesh
@@ -508,11 +533,7 @@ export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
         position={position}
         rotation={rotation} // ✅ Apply rotation here
       >
-        <meshStandardMaterial
-          color="hotpink"
-          
-          side={THREE.DoubleSide}
-        />
+        <meshStandardMaterial color="hotpink" side={THREE.DoubleSide} />
       </mesh>
 
       {pickBox && center && (
@@ -523,6 +544,7 @@ export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
           onPointerOut={onOut}
           rotation={rotation}
           onClick={onFaceClick}
+          onContextMenu={onRightClick}
         >
           {[...Array(6)].map((_, i) => (
             <meshStandardMaterial key={i} wireframe opacity={1} />
@@ -536,6 +558,7 @@ export default function STLModel({ geom, position, shape, rotation=[0,0,0] }) {
 
 /* ---------------- drag ghost ----------------------- */
 export function Cursor() {
+  const meshRef = useRef();
   const { camera, gl } = useThree();
   const mouse = useRef(new THREE.Vector2());
   const ray = useMemo(() => new Raycaster(), []);
@@ -545,6 +568,57 @@ export function Cursor() {
   const addModel = useSTLStore((s) => s.addModel);
   const finishDrag = useSTLStore((s) => s.finishDrag);
   const [hit, setHit] = useState(null);
+
+  const [ghostRotation, setGhostRotation] = useState(
+    meshRef.current?.rotation
+      ? meshRef.current.rotation.clone()
+      : new THREE.Euler()
+  );
+
+  // function snapTo90Radians(angle) {
+  //   const step = Math.PI / 2; // 90 degrees
+  //   return Math.round(angle / step) * step;
+  // }
+
+  // useEffect(() => {
+  //   if (meshRef?.rotation) {
+  //     setGhostRotation(snap.rotation.clone());
+  //   }
+  // }, [dragging]);
+
+  // useEffect(() => {
+  //   const handleKeyDown = (e) => {
+  //     if (!dragging) return;
+
+  //     const current = ghostRotation.clone();
+
+  //     switch (e.key.toLowerCase()) {
+  //       case "r":
+  //         current.y += Math.PI / 2;
+  //         break;
+  //       case "x":
+  //         current.x += Math.PI / 2;
+  //         break;
+  //       case "z":
+  //         current.z += Math.PI / 2;
+  //         break;
+  //       default:
+  //         return;
+  //     }
+
+  //     // ✅ Snap each axis to nearest 90°
+  //     current.x = snapTo90Radians(current.x);
+  //     current.y = snapTo90Radians(current.y);
+  //     current.z = snapTo90Radians(current.z);
+
+  //     setGhostRotation(current);
+  //   };
+
+  //   window.addEventListener("keypress", handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener("keypress", handleKeyDown);
+  //   };
+  // }, [ghostRotation, dragging]);
 
   const move = useCallback(
     (e) => {
@@ -564,7 +638,7 @@ export function Cursor() {
 
   const click = useCallback(() => {
     if (!dragging || !hit) return;
-    addModel(hit.x, hit.y, hit.z, dragging.geometry, dragging.shape);
+    addModel(hit.x, hit.y, hit.z, dragging.geometry, dragging.shape, [0,0,0]);
     finishDrag();
   }, [dragging, hit]);
 
@@ -578,7 +652,12 @@ export function Cursor() {
   }, [move, click]);
 
   return dragging && hit ? (
-    <mesh position={hit} pointerEvents={false}>
+    <mesh
+      position={hit}
+      pointerEvents={false}
+      ref={meshRef}
+      rotation={ghostRotation}
+    >
       <primitive object={dragging.geometry} />
       <meshStandardMaterial transparent opacity={0.6} color="cyan" />
     </mesh>
